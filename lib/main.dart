@@ -6,13 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 int _golferID = 0;
+SharedPreferences prefs;
 String _name = '', _phone = '';
 enum gendre { Male, Female }
 gendre _sex = gendre.Male;
 String _golferAvatar;
 double _handicap = 18;
 bool isRegistered = false;
-SharedPreferences prefs;
 
 Future<void> main() async {
   prefs = await SharedPreferences.getInstance();
@@ -82,48 +82,50 @@ class _HomePageState extends State<MyHomePage> {
           // The title text which will be shown on the action bar
           title: Text('Golfers Club'),
         ),
-        drawer: !isRegistered
-            ? null
-            : Drawer(
-                child: ListView(
-                  children: <Widget>[
-                    UserAccountsDrawerHeader(
-                      accountName: Text(_name),
-                      accountEmail: Text(_phone),
-                      currentAccountPicture: GestureDetector(
-                          onTap: () =>
-                              //ImagePicker().pickImage(source: ImageSource.gallery),
-                              switchHome("Golfer Info"),
-                          child: CircleAvatar(backgroundImage: NetworkImage(_golferAvatar ?? maleGolfer))
-                          //"https://desk-fd.zol-img.com.cn/t_s144x90c5/g5/M00/02/07/ChMkJlbKy5GIKHO3AAXx0E0tcL8AALIsgMfpwoABfHo739.jpg"))
-                          ),
-                      decoration: BoxDecoration(
-                          image: DecorationImage(fit: BoxFit.fill, image: NetworkImage("https://images.unsplash.com/photo-1622482594949-a2ea0c800edd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80")
-                              //("https://desk-fd.zol-img.com.cn/t_s208x130c5/g4/M00/0F/02/Cg-4zFT5Wj-IQxAKABhgu3KD_twAAWK_ANBmYUAGGDT047.jpg")
-                              )),
-                      onDetailsPressed: () => switchHome("Golfer Info"),
-                    ),
-                    ListTile(title: Text("Groups"), trailing: Icon(Icons.arrow_right), onTap: () => switchHome('Groups')),
-                    ListTile(title: Text("Activities"), trailing: Icon(Icons.arrow_right), onTap: () => switchHome('Activities')),
-                    ListTile(title: Text("Create Activity"), trailing: Icon(Icons.arrow_right)),
-                    ListTile(title: Text("Golf Courses"), trailing: Icon(Icons.arrow_right)),
-                    ListTile(title: Text("My scores"), trailing: Icon(Icons.arrow_right)),
-                    ListTile(
-                        title: Text("Log out"),
-                        trailing: Icon(Icons.exit_to_app),
-                        onTap: () {
-                          setState(() {
-                            isRegistered = false;
-                            _name = '';
-                            _phone = '';
-                            _golferID = 0;
-                          });
-                          Navigator.of(context).pop();
-                        }),
-                  ],
-                ),
-              ),
+        drawer: !isRegistered ? null : golfDrawer(),
         body: Center(child: !isRegistered ? registerBody() : homeBodies()));
+  }
+
+  Drawer golfDrawer() {
+    return Drawer(
+      child: ListView(
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text(_name),
+            accountEmail: Text(_phone),
+            currentAccountPicture: GestureDetector(
+                onTap: () =>
+                    //ImagePicker().pickImage(source: ImageSource.gallery),
+                    switchHome("Golfer Info"),
+                child: CircleAvatar(backgroundImage: NetworkImage(_golferAvatar ?? maleGolfer))
+                //"https://desk-fd.zol-img.com.cn/t_s144x90c5/g5/M00/02/07/ChMkJlbKy5GIKHO3AAXx0E0tcL8AALIsgMfpwoABfHo739.jpg"))
+                ),
+            decoration: BoxDecoration(
+                image: DecorationImage(fit: BoxFit.fill, image: NetworkImage("https://images.unsplash.com/photo-1622482594949-a2ea0c800edd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80")
+                    //("https://desk-fd.zol-img.com.cn/t_s208x130c5/g4/M00/0F/02/Cg-4zFT5Wj-IQxAKABhgu3KD_twAAWK_ANBmYUAGGDT047.jpg")
+                    )),
+            onDetailsPressed: () => switchHome("Golfer Info"),
+          ),
+          ListTile(title: Text("Groups"), trailing: Icon(Icons.arrow_right), onTap: () => switchHome('Groups')),
+          ListTile(title: Text("Activities"), trailing: Icon(Icons.arrow_right), onTap: () => switchHome('Activities')),
+          ListTile(title: Text("Create Activity"), trailing: Icon(Icons.arrow_right)),
+          ListTile(title: Text("Golf Courses"), trailing: Icon(Icons.arrow_right)),
+          ListTile(title: Text("My scores"), trailing: Icon(Icons.arrow_right)),
+          ListTile(
+              title: Text("Log out"),
+              trailing: Icon(Icons.exit_to_app),
+              onTap: () {
+                setState(() {
+                  isRegistered = false;
+                  _name = '';
+                  _phone = '';
+                  _golferID = 0;
+                });
+                Navigator.of(context).pop();
+              }),
+        ],
+      ),
+    );
   }
 
   final String maleGolfer = 'https://images.unsplash.com/photo-1494249120761-ea1225b46c05?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=713&q=80';
@@ -182,7 +184,7 @@ class _HomePageState extends State<MyHomePage> {
           });
         });
       }
-        return _golferID;
+      return _golferID;
     }
 
     final loginButton = Padding(
